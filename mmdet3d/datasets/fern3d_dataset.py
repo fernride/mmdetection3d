@@ -1,0 +1,40 @@
+import numpy as np
+
+from mmdet3d.registry import DATASETS
+from .det3d_dataset import Det3DDataset
+from mmdet3d.structures import LiDARInstance3DBoxes
+
+COLOR_MAP = {
+    'car': (106, 0, 228),
+    'truck': (119, 11, 32),
+    'trailer': (0, 0, 192),
+    'human': (165, 42, 42),
+    'reach_stacker': (255, 77, 255),
+    'crane': (197, 226, 255),
+    'forklift': (0, 60, 100),
+}
+
+
+@DATASETS.register_module()
+class Fern3dDataset(Det3DDataset):
+    r"""Fern3d Dataset.
+
+    This class serves as the API for experiments on the `Fern3d Dataset
+    """
+
+    METAINFO = {
+        'classes':
+        (x for x in COLOR_MAP.keys()),
+        'palette': [COLOR_MAP[x] for x in COLOR_MAP.keys()]
+    }
+
+    def parse_ann_info(self, info: dict) -> dict | None:
+        ann_info = super().parse_ann_info(info)
+        if ann_info is None:
+            ann_info = dict()
+            ann_info['gt_labels_3d'] = np.zeros(0, dtype=np.int64)
+            ann_info['gt_bboxes_3d'] = np.zeros((0, 7), dtype=np.float32)
+        
+        gt_bboxes_3d = LiDARInstance3DBoxes(ann_info['gt_bboxes_3d'])
+        ann_info['gt_bboxes_3d'] = gt_bboxes_3d
+        return ann_info

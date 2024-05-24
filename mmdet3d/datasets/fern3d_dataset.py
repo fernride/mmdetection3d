@@ -1,3 +1,5 @@
+from typing import Callable, List, Union
+
 import numpy as np
 
 from mmdet3d.registry import DATASETS
@@ -23,10 +25,30 @@ class Fern3dDataset(Det3DDataset):
     """
 
     METAINFO = {
-        'classes':
-        (x for x in COLOR_MAP.keys()),
+        'classes': [x for x in COLOR_MAP.keys()],
         'palette': [COLOR_MAP[x] for x in COLOR_MAP.keys()]
     }
+
+    def __init__(self,
+                 data_root: str,
+                 ann_file: str,
+                 pipeline: List[Union[dict, Callable]] = [],
+                 modality: dict = dict(use_camera=False, use_lidar=True),
+                 box_type_3d: str = 'LiDAR',
+                 filter_empty_gt: bool = True,
+                 test_mode: bool = False,
+                 **kwargs):
+        assert box_type_3d.lower() in ['lidar']
+        super().__init__(
+            data_root=data_root,
+            ann_file=ann_file,
+            pipeline=pipeline,
+            modality=modality,
+            box_type_3d=box_type_3d,
+            filter_empty_gt=filter_empty_gt,
+            test_mode=test_mode,
+            **kwargs)
+
 
     def parse_ann_info(self, info: dict) -> dict | None:
         ann_info = super().parse_ann_info(info)

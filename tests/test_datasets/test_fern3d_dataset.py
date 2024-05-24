@@ -1,3 +1,5 @@
+import numpy as np
+
 from mmcv.transforms.base import BaseTransform
 from mmengine.registry import TRANSFORMS
 from mmengine.structures import InstanceData
@@ -6,13 +8,10 @@ from mmdet3d.datasets import Fern3dDataset
 from mmdet3d.structures import Det3DDataSample, LiDARInstance3DBoxes
 
 
-def _generate_nus_dataset_config():
-    data_root = 'tests/data/lyft'
-    ann_file = 'lyft_infos.pkl'
-    classes = [
-        'car', 'truck', 'bus', 'emergency_vehicle', 'other_vehicle',
-        'motorcycle', 'bicycle', 'pedestrian', 'animal'
-    ]
+def _generate_dataset_config():
+    data_root = '/home/omuratov/bigdata/datasets/fern3d_v0'
+    ann_file = 'fern3d_test.pkl'
+    classes = ['truck', "car", "human"]
     if 'Identity' not in TRANSFORMS:
 
         @TRANSFORMS.register_module()
@@ -36,4 +35,30 @@ def _generate_nus_dataset_config():
     return data_root, ann_file, classes, data_prefix, pipeline, modality
 
 
+def test_getitem():
+    np.random.seed(0)
 
+    data_root, ann_file, classes, data_prefix, pipeline, modality = \
+        _generate_dataset_config()
+
+    dataset = Fern3dDataset(
+        data_root,
+        ann_file,
+        data_prefix=data_prefix,
+        pipeline=pipeline,
+        metainfo=dict(classes=classes),
+        modality=modality)
+
+    dataset.prepare_data(0)
+    input_dict = dataset.get_data_info(0)
+
+    assert data_prefix['pts'] in input_dict['lidar_points']['lidar_path']
+    assert data_root in input_dict['lidar_points']['lidar_path']
+
+    ann_info = dataset.parse_ann_info(input_dict)
+
+    assert 'gt_labels_3d' in ann_info
+    assert ann_info['gt_labels_3d'].dtype == np.int64
+
+if __name__ == '__main__':
+    test_getitem()

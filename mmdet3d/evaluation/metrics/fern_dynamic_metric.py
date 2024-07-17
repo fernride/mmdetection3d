@@ -14,6 +14,85 @@ from mmdet3d.structures import (Box3DMode,
                                 LiDARInstance3DBoxes)
 
 
+def bounding_box_to_corners(bbox):
+    """
+    Convert bounding box parameters to corner points.
+    """
+    x, y, z, length, width, height, yaw = bbox
+    corners = np.array([
+        [length/2, width/2, 0.0],        # Front left bottom 
+        [length/2, -width/2, 0.0],       # Front right bottom 
+        [length/2, -width/2, height],    # Front right top 
+        [length/2, width/2, height],     # Front left top
+        [-length/2, width/2, 0.0],       # Back left bottom
+        [-length/2, -width/2, 0.0],      # Back right bottom
+        [-length/2, -width/2, height],   # Back right top
+        [-length/2, width/2, height]     # Back left top
+    ])
+    # Rotation matrix
+    R = np.array([
+        [np.cos(yaw), -np.sin(yaw), 0],
+        [np.sin(yaw), np.cos(yaw), 0],
+        [0, 0, 1]
+    ])
+    transformed_corners = np.dot(corners, R.T) + np.array([x, y, z])
+    return transformed_corners
+
+
+def shortest_distance_between_bboxes(bbox1, bbox2):
+    """
+    Compute the shortest distance between two bounding boxes.
+    """
+    corners1 = bounding_box_to_corners(bbox1)
+    corners2 = bounding_box_to_corners(bbox2)
+    min_distance = np.inf
+
+    # Compute distance between all pairs of points
+    for corner1 in corners1:
+        for corner2 in corners2:
+            distance = np.linalg.norm(corner1 - corner2)
+            if distance < min_distance:
+                min_distance = distance
+
+    return min_distance
+
+
+
+def test_bbs_against_bb(bbs, bbs_classes, bb, bb_class):
+    """Test if a list of bounding boxes intersect with a single bounding box.
+    
+    """
+    assert len(bbs) == len(bbs_classes)
+    bb_this = LiDARInstance3DBoxes(tensor=bb)
+    max_overlap = None
+    max_overlap_index = -1
+
+
+    for index, (other_bb, other_bb_class) in enumerate(zip(bbs, bbs_classes)):
+        bb_other = LiDARInstance3DBoxes(tensor=other_bb)
+        overlap = bb_this.overlaps(bb_other)
+        if max_overlap is None or overlap > max_overlap:
+            max_overlap = overlap
+            max_overlap_index = index
+    
+    if max_overlap_index == -1:
+        return False, -1
+
+
+def calculate_vru_detection_quality():
+    pass
+
+def calculate_vehicle_detection_quality():
+    pass 
+
+def calculate_ghosts(pred_bbs, pred_classes, gt_bbs, gt_classes):
+
+    pass
+    
+def calculate_crane_detection_quality():
+    pass
+
+
 @METRICS.register_module()
 class FernDynamicMetric(BaseMetric):
     def __init__(self,
@@ -36,6 +115,7 @@ class FernDynamicMetric(BaseMetric):
             if metric not in allowed_metrics:
                 raise KeyError("metric should be one of 'bbox', 'img_bbox', "
                                f'but got {metric}.')
+            
 
 
     def process(self, data_batch: dict, data_samples: Sequence[dict]) -> None:
@@ -48,17 +128,23 @@ class FernDynamicMetric(BaseMetric):
             data_batch (dict): A batch of data from the dataloader.
             data_samples (Sequence[dict]): A batch of outputs from the model.
         """
-
+        print(self.dataset_meta['classes'])
+        
         for data_sample in data_samples:
             result = dict()
-            pred_3d = data_sample['pred_instances_3d']
-            pred_2d = data_sample['pred_instances']
-            for attr_name in pred_3d:
-                pred_3d[attr_name] = pred_3d[attr_name].to('cpu')
-            result['pred_instances_3d'] = pred_3d
-            for attr_name in pred_2d:
-                pred_2d[attr_name] = pred_2d[attr_name].to('cpu')
-            result['pred_instances'] = pred_2d
+            pred = data_sample['pred_instances_3d']
+            pred_scores = pred['scores_3d'].cpu().numpy()
+            pred_bboxes = pred['bboxes_3d'].cpu().numpy()
+            pred_labels = pred['labels_3d'].cpu().numpy()
+
+            gt_ann = data_sample['eval_ann_info']
+            gt_bboxes = gt_ann['gt_bboxes_3d'].cpu().numpy()
+            gt_labels = gt_ann['gt_labels_3d'].cpu().numpy()
+            num_points = gt_ann['num_lidar_pts'].cpu().numpy()
+            # here need to do optimal assignment
+
+
+
             sample_idx = data_sample['sample_idx']
             result['sample_idx'] = sample_idx
             self.results.append(result)

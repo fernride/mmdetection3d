@@ -156,7 +156,7 @@ model = dict(
         nms_pre=100,
         max_num=50))
 
-work_dir = '/home/omuratov/bigdata/training_info/fernnet'
+work_dir = '/home/omuratov/workspace/fern_ml/output/fernnet'
 
 default_hooks = dict(
     checkpoint=dict(
@@ -169,4 +169,4 @@ default_hooks = dict(
     param_scheduler=dict(type='ParamSchedulerHook'),
     sampler_seed=dict(type='DistSamplerSeedHook'),
     timer=dict(type='IterTimerHook'),
-    visualization=dict(type='Det3DVisualizationHook'))
+    visualization=dict(type='Det3DVisualizationHook', draw=False, vis_task="lidar_det"))

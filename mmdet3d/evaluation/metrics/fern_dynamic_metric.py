@@ -128,7 +128,7 @@ class FernDynamicMetric(BaseMetric):
             data_batch (dict): A batch of data from the dataloader.
             data_samples (Sequence[dict]): A batch of outputs from the model.
         """
-        print(self.dataset_meta['classes'])
+        #print(self.dataset_meta['classes'])
         
         for data_sample in data_samples:
             result = dict()
@@ -139,8 +139,8 @@ class FernDynamicMetric(BaseMetric):
 
             gt_ann = data_sample['eval_ann_info']
             gt_bboxes = gt_ann['gt_bboxes_3d'].cpu().numpy()
-            gt_labels = gt_ann['gt_labels_3d'].cpu().numpy()
-            num_points = gt_ann['num_lidar_pts'].cpu().numpy()
+            gt_labels = gt_ann['gt_labels_3d']
+            num_points = gt_ann['num_lidar_pts']
             # here need to do optimal assignment
 
 

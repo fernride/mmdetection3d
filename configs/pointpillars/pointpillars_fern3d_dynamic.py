@@ -37,14 +37,65 @@ anchors_info = {
     },
 }
 
-class_names = ['truck', 'trailer', 'reach_stacker', 'crane']
+bbox_assigner = {
+    "truck": dict(
+        type='Max3DIoUAssigner',
+        iou_calculator=dict(type='mmdet3d.BboxOverlapsNearest3D'),
+        pos_iou_thr=0.6,
+        neg_iou_thr=0.45,
+        min_pos_iou=0.45,
+        ignore_iof_thr=-1),
+    "trailer": dict(
+        type='Max3DIoUAssigner',
+        iou_calculator=dict(type='mmdet3d.BboxOverlapsNearest3D'),
+        pos_iou_thr=0.6,
+        neg_iou_thr=0.45,
+        min_pos_iou=0.45,
+        ignore_iof_thr=-1),
+    "human": dict(
+        type='Max3DIoUAssigner',
+        iou_calculator=dict(type='mmdet3d.BboxOverlapsNearest3D'),
+        pos_iou_thr=0.6,
+        neg_iou_thr=0.45,
+        min_pos_iou=0.45,
+        ignore_iof_thr=-1),
+    "car": dict(
+        type='Max3DIoUAssigner',
+        iou_calculator=dict(type='mmdet3d.BboxOverlapsNearest3D'),
+        pos_iou_thr=0.6,
+        neg_iou_thr=0.45,
+        min_pos_iou=0.45,
+        ignore_iof_thr=-1),
+    "crane": dict(
+        type='Max3DIoUAssigner',
+        iou_calculator=dict(type='mmdet3d.BboxOverlapsNearest3D'),
+        pos_iou_thr=0.6,
+        neg_iou_thr=0.45,
+        min_pos_iou=0.45,
+        ignore_iof_thr=-1),
+    "forklift": dict(
+        type='Max3DIoUAssigner',
+        iou_calculator=dict(type='mmdet3d.BboxOverlapsNearest3D'),
+        pos_iou_thr=0.6,
+        neg_iou_thr=0.45,
+        min_pos_iou=0.45,
+        ignore_iof_thr=-1),
+    "reach_stacker": dict(
+        type='Max3DIoUAssigner',
+        iou_calculator=dict(type='mmdet3d.BboxOverlapsNearest3D'),
+        pos_iou_thr=0.6,
+        neg_iou_thr=0.45,
+        min_pos_iou=0.45,
+        ignore_iof_thr=-1),
+}
+
+class_names = ['truck']# 'trailer', 'reach_stacker', 'crane']
 # todo figure-out order of anchors vs order of classes in meta of pickle vs order of classes in config
 # from KITTI it looks like order in the config is the main
 
 # TODO define ranges
 voxel_size = [0.16, 0.16, 4]
 scatter_shape = [496, 432]
-#point_cloud_range = [ 4, -39.68, -1, 73.12, 39.68, 3]
 
 model = dict(
     type='VoxelNet',
@@ -85,18 +136,8 @@ model = dict(
         assign_per_class=True,
         anchor_generator=dict(
             type='AlignedAnchor3DRangeGenerator',
-            ranges=[
-                anchors_info['truck']['ranges'],
-                anchors_info['trailer']['ranges'],
-                anchors_info['reach_stacker']['ranges'],
-                anchors_info['crane']['ranges'],
-            ],
-            sizes=[
-                anchors_info['truck']['sizes'],
-                anchors_info['trailer']['sizes'],
-                anchors_info['reach_stacker']['sizes'],
-                anchors_info['crane']['sizes'],
-            ],
+            ranges=[anchors_info[class_name]['ranges'] for class_name in class_names],
+            sizes=[anchors_info[class_name]['sizes'] for class_name in class_names],
             rotations=[0, 1.57],
             reshape_out=False),
         diff_rad_by_sin=True,
@@ -114,36 +155,7 @@ model = dict(
             loss_weight=0.2)),
     # model training and testing settings
     train_cfg=dict(
-        assigner=[
-            dict(  # for Truck 
-                type='Max3DIoUAssigner',
-                iou_calculator=dict(type='mmdet3d.BboxOverlapsNearest3D'),
-                pos_iou_thr=0.6,
-                neg_iou_thr=0.45,
-                min_pos_iou=0.45,
-                ignore_iof_thr=-1),
-            dict(  # for Trailer 
-                type='Max3DIoUAssigner',
-                iou_calculator=dict(type='mmdet3d.BboxOverlapsNearest3D'),
-                pos_iou_thr=0.6,
-                neg_iou_thr=0.45,
-                min_pos_iou=0.45,
-                ignore_iof_thr=-1),
-            dict(  # for Reach Stacker
-                type='Max3DIoUAssigner',
-                iou_calculator=dict(type='mmdet3d.BboxOverlapsNearest3D'),
-                pos_iou_thr=0.6,
-                neg_iou_thr=0.45,
-                min_pos_iou=0.45,
-                ignore_iof_thr=-1),
-            dict(  # for Crane
-                type='Max3DIoUAssigner',
-                iou_calculator=dict(type='mmdet3d.BboxOverlapsNearest3D'),
-                pos_iou_thr=0.6,
-                neg_iou_thr=0.45,
-                min_pos_iou=0.45,
-                ignore_iof_thr=-1),
-        ],
+        assigner=[bbox_assigner[class_name] for class_name in class_names],
         allowed_border=0,
         pos_weight=-1,
         debug=False),

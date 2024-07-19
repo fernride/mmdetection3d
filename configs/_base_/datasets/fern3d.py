@@ -1,8 +1,7 @@
 # dataset description
 dataset_type = 'Fern3dDataset'
-data_root = '/home/omuratov/bigdata/datasets/fern3d_v0'
+data_root = '/home/omuratov/bigdata/datasets/fern3d_v0/'
 class_names = ['car', 'truck', 'trailer', 'human', 'reach_stacker', 'crane', 'forklift']
-#point_cloud_range = [0, -40, -0.5, 60.0, 40, 3.5]
 point_cloud_range = [ 0, -39.68, -1, 69.12, 39.68, 3]
 input_modality = dict(use_lidar=True, use_camera=False)
 metainfo = dict(classes=class_names)

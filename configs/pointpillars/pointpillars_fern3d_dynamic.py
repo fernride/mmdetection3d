@@ -169,4 +169,4 @@ default_hooks = dict(
     param_scheduler=dict(type='ParamSchedulerHook'),
     sampler_seed=dict(type='DistSamplerSeedHook'),
     timer=dict(type='IterTimerHook'),
-    visualization=dict(type='Det3DVisualizationHook', draw=False, vis_task="lidar_det"))
+    visualization=dict(type='Det3DVisualizationHook', draw=False, vis_task="lidar_det", test_out_dir=f'{work_dir}/test_out_dir'),)

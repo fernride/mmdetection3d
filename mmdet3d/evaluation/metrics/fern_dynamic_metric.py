@@ -140,7 +140,7 @@ class FernDynamicMetric(BaseMetric):
             gt_ann = data_sample['eval_ann_info']
             gt_bboxes = gt_ann['gt_bboxes_3d'].cpu().numpy()
             gt_labels = gt_ann['gt_labels_3d']
-            num_points = gt_ann['num_lidar_pts']
+            #num_points = gt_ann['num_lidar_pts']
             # here need to do optimal assignment
 
 

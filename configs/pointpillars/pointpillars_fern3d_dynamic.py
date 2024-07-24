@@ -1,38 +1,43 @@
 # model settings
 _base_ = [
     '../_base_/datasets/fern3d.py',
-    '../_base_/schedules/cyclic-40e.py', '../_base_/default_runtime.py'
+    '../_base_/default_runtime.py'
 ]
 
-point_cloud_range = [ 0, -39.68, -1, 69.12, 39.68, 3]
+#point_cloud_range = [ 0, -39.68, -1, 69.12, 39.68, 3]
+point_cloud_range = [-20.0, -39.68, -0.25, 49.12, 39.68, 3.75]
+x_min = point_cloud_range[0] + 1.0
+x_max = point_cloud_range[3] - 1.0
+y_min = point_cloud_range[1] + 1.0
+y_max = point_cloud_range[4] - 1.0
 
 anchors_info = {
     "truck": {
-        "ranges": [0., -20.0, -1.0, 50.0, 20.0, 0.5],
+        "ranges": [x_min, y_min, -1.0, x_max, y_max, 0.5],
         "sizes": [5.94, 2.65, 3.65],
     },
     "trailer": {
-        "ranges": [0., -30.0, -1.0, 50.0, 30.0, 0.5],
+        "ranges": [x_min, y_min, -1.0, x_max, y_max, 0.5],
         "sizes": [12.8, 2.75, 3.38],
     },
     "human": {
-        "ranges": [0., -15.0, -1.0, 35.0, 15.0, 1.0],
+        "ranges": [max(x_min, 0.), max(y_min, -15.0), -1.0, min(x_max, 35.0), min(y_max, 15.0), 1.0],
         "sizes": [0.6, 0.6, 1.78],
     },
     "car": {
-        "ranges": [0., -20.0, -1.0, 50.0, 20.0, 0.5],
+        "ranges": [max(x_min, 0.), max(y_min, -20.0), -1.0, min(x_max, 50.0), min(y_max, 20.0), 0.5],
         "sizes": [4.43, 1.77, 1.70],
     },
     "crane": {
-        "ranges": [0., -20.0, -1.0, 50.0, 20.0, 0.5],
+        "ranges": [max(x_min, 0.), max(y_min, -20.0), -1.0, min(x_max, 50.0), min(y_max, 20.0), 0.5],
         "sizes": [10.5, 1.0, 2.2],
     },
     "forklift": {
-        "ranges": [0., -20.0, -1.0, 40.0, 20.0, 0.5],
+        "ranges": [max(x_min, 0.), max(y_min, -20.0), -1.0, min(x_max, 40.0), min(y_max, 20.0), 0.5],
         "sizes": [2.5, 1.2, 1.93],
     },
     "reach_stacker": {
-        "ranges": [0., -20.0, -1.0, 50.0, 20.0, 0.5],
+        "ranges": [max(x_min, 0.), max(y_min, -20.0), -1.0, min(x_max, 50.0), min(y_max, 20.0), 0.5],
         "sizes": [6.0, 2.5, 2.5],
     },
 }
@@ -89,13 +94,13 @@ bbox_assigner = {
         ignore_iof_thr=-1),
 }
 
-class_names = ['truck']# 'trailer', 'reach_stacker', 'crane']
+class_names = ['truck', 'trailer']# 'trailer', 'reach_stacker', 'crane']
 # todo figure-out order of anchors vs order of classes in meta of pickle vs order of classes in config
 # from KITTI it looks like order in the config is the main
 
 # TODO define ranges
 voxel_size = [0.16, 0.16, 4]
-scatter_shape = [496, 432]
+scatter_shape = [496, 432] # y x
 
 model = dict(
     type='VoxelNet',
@@ -103,10 +108,10 @@ model = dict(
         type='Det3DDataPreprocessor',
         voxel=True,
         voxel_layer=dict(
-            max_num_points=32,  # max_points_per_voxel
+            max_num_points=20,  # max_points_per_voxel
             point_cloud_range=point_cloud_range,
             voxel_size=voxel_size,
-            max_voxels=(16000, 40000))),
+            max_voxels=(32000, 32000))),
     voxel_encoder=dict(
         type='PillarFeatureNet',
         in_channels=4,
@@ -158,7 +163,7 @@ model = dict(
         assigner=[bbox_assigner[class_name] for class_name in class_names],
         allowed_border=0,
         pos_weight=-1,
-        debug=False),
+        debug=True),
     test_cfg=dict(
         use_rotate_nms=True,
         nms_across_levels=False,
@@ -182,3 +187,62 @@ default_hooks = dict(
     sampler_seed=dict(type='DistSamplerSeedHook'),
     timer=dict(type='IterTimerHook'),
     visualization=dict(type='Det3DVisualizationHook', draw=False, vis_task="lidar_det", test_out_dir=f'{work_dir}/test_out_dir'),)
+
+vis_backends = [dict(type='LocalVisBackend'), dict(type='TensorboardVisBackend')]
+visualizer = dict(
+    type='Det3DLocalVisualizer', vis_backends=vis_backends, name='visualizer')
+
+
+lr = 0.01
+
+optim_wrapper = dict(
+    type='OptimWrapper',
+    optimizer=dict(type='AdamW', lr=lr, betas=(0.95, 0.99), weight_decay=0.01),
+    clip_grad=dict(max_norm=10, norm_type=2))
+
+param_scheduler = [
+    # learning rate scheduler
+    # During the first 16 epochs, learning rate increases from 0 to lr * 10
+    # during the next 24 epochs, learning rate decreases from lr * 10 to
+    # lr * 1e-4
+    dict(
+        type='CosineAnnealingLR',
+        T_max=16,
+        eta_min=lr * 0.1,
+        begin=0,
+        end=16,
+        by_epoch=True,
+        convert_to_iter_based=True),
+    dict(
+        type='CosineAnnealingLR',
+        T_max=24,
+        eta_min=lr * 1e-4,
+        begin=16,
+        end=40,
+        by_epoch=True,
+        convert_to_iter_based=True),
+    # momentum scheduler
+    # During the first 16 epochs, momentum increases from 0 to 0.85 / 0.95
+    # during the next 24 epochs, momentum increases from 0.85 / 0.95 to 1
+    dict(
+        type='CosineAnnealingMomentum',
+        T_max=16,
+        eta_min=0.85 / 0.95,
+        begin=0,
+        end=16,
+        by_epoch=True,
+        convert_to_iter_based=True),
+    dict(
+        type='CosineAnnealingMomentum',
+        T_max=24,
+        eta_min=1,
+        begin=16,
+        end=40,
+        by_epoch=True,
+        convert_to_iter_based=True)
+]
+
+train_cfg = dict(by_epoch=True, max_epochs=40, val_interval=1)
+val_cfg = dict()
+test_cfg = dict()
+auto_scale_lr = dict(enable=False, base_batch_size=48)

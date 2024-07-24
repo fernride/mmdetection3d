@@ -1,12 +1,16 @@
 # dataset description
 dataset_type = 'Fern3dDataset'
-data_root = '/home/omuratov/bigdata/datasets/fern3d_v0/'
+#data_root = '/home/omuratov/bigdata/datasets/fern3d_v0_tiny/'
+data_root = '/home/omuratov/bigdata/datasets/fern3d_v0_b0/'
 class_names = ['car', 'truck', 'trailer', 'human', 'reach_stacker', 'crane', 'forklift']
-point_cloud_range = [ 0, -39.68, -1, 69.12, 39.68, 3]
+#point_cloud_range = [ 0, -39.68, -1, 50.00, 39.68, 3]
+point_cloud_range = [-20.0, -39.68, -0.25, 49.12, 39.68, 3.75]
 input_modality = dict(use_lidar=True, use_camera=False)
 metainfo = dict(classes=class_names)
 
 backend_args = None
+deg_to_rad_mult=3.14159265358979323846 / 180.0
+
 
 train_pipeline = [
     dict(
@@ -16,12 +20,17 @@ train_pipeline = [
         use_dim=4,
         backend_args=backend_args),
     dict(type='LoadAnnotations3D', with_bbox_3d=True, with_label_3d=True),
-    #dict(
-    #    type='GlobalRotScaleTrans',
-    #    rot_range=[-0.3925, 0.3925],
-    #    scale_ratio_range=[0.95, 1.05],
-    #    translation_std=[0, 0, 0]),
-    #dict(type='RandomFlip3D', flip_ratio_bev_horizontal=0.5),
+    dict(
+        type='RandomJitterPoints',
+        jitter_std=[0.05, 0.05, 0.1],
+        clip_range=[0.1, 0.1, 0.1],
+    ),
+    dict(type='RandomFlip3D', flip_ratio_bev_horizontal=0.0, flip_box3d=True),
+    dict(
+        type='GlobalRotScaleTrans',
+        rot_range=[-deg_to_rad_mult*01.0, deg_to_rad_mult*01.0],
+        scale_ratio_range=[0.95, 1.05],
+        translation_std=[0.01, 0.01, 0.01]),
     dict(type='PointsRangeFilter', point_cloud_range=point_cloud_range),
     dict(type='ObjectRangeFilter', point_cloud_range=point_cloud_range),
     dict(type='PointShuffle'),
@@ -73,16 +82,19 @@ train_dataloader = dict(
     persistent_workers=True,
     sampler=dict(type='DefaultSampler', shuffle=True),
     dataset=dict(
-        type=dataset_type,
-        data_root=data_root,
-        ann_file='fern3d_train.pkl',
-        data_prefix=data_prefix,
-        pipeline=train_pipeline,
-        modality=input_modality,
-        test_mode=False,
-        metainfo=metainfo,
-        box_type_3d='LiDAR',
-        backend_args=backend_args))
+        type='RepeatDataset',
+        times=2,
+        dataset=dict(
+            type=dataset_type,
+            data_root=data_root,
+            ann_file='fern3d_train.pkl',
+            data_prefix=data_prefix,
+            pipeline=train_pipeline,
+            modality=input_modality,
+            test_mode=False,
+            metainfo=metainfo,
+            box_type_3d='LiDAR',
+            backend_args=backend_args)))
 
 test_dataloader = dict(
     batch_size=1,

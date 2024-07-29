@@ -149,13 +149,14 @@ def make_pointcloud_object(point_cloud_data: np.ndarray):
 
 
 class Det3dViz:
-    def __init__(self, width, height, dataset_file):
+    def __init__(self, width: int, height: int, dataset_folder: Path, inference: CustomModelRunner):
         self.window = gui.Application.instance.create_window("Det3dViz", width, height)
         self._scene = gui.SceneWidget()
         self._scene.scene = rendering.Open3DScene(self.window.renderer)
         self._scene.set_view_controls(gui.SceneWidget.Controls.ROTATE_CAMERA_SPHERE)
-        self._dataset = Det3dReader(dataset_file)
-        self._dataset_file = dataset_file
+        self._dataset = sorted([f for f in dataset_folder.iterdir() if f.is_file() and f.suffix == ".bin"])
+        self._inference = inference
+        self._class_names = ['car', 'truck', 'trailer', 'human', 'reach_stacker']
 
         # side panel
         em = self.window.theme.font_size
@@ -165,7 +166,6 @@ class Det3dViz:
         self.mp_material = rendering.MaterialRecord()
         self.mp_material.shader = "defaultUnlit"
         self.mp_material.point_size = 1.0
-        # self.mp_material.base_color = [1.0, 0.5, 0.0, 1.0]
 
         # material to show bounding boxes
         self.bb_material = dict()
@@ -186,7 +186,6 @@ class Det3dViz:
         self._settings_panel.add_child(self._samples_list)
         self._samples_list.set_on_selection_changed(self._on_samples_selection_changed)
         self._samples = list()
-        self._mask = None
 
         # layout
         self.window.set_on_layout(self._on_layout)
@@ -234,26 +233,29 @@ class Det3dViz:
     def _on_samples_selection_changed(self, value, is_double_click):
         if not is_double_click:
             self._load_frame(self._samples_list.selected_index)
-            self._draw_bbox(self._samples_list.selected_index)
 
-    def _draw_bbox(self, idx):
-        bboxes = self._dataset.get_bboxes(idx)
+    def _draw_bbox(self, bboxes):
         for count, bbox in enumerate(bboxes):
-            o3d_bbox = o3d_bbox_from_cuboid(bbox)
-            self._scene.scene.add_geometry(f"bbox_{count}", o3d_bbox, self.bb_material[bbox.class_name])
+            self._scene.scene.add_geometry(f"bbox_{count}", o3d_bbox_from_cuboid(bbox), self.bb_material[bbox.class_name])
 
     def _load_frame(self, idx):
         self._scene.scene.clear_geometry()
-        pcd_data = self._dataset.get_lidar_data(idx)
-        pcd = make_pointcloud_object(pcd_data)
+        f = self._dataset[idx]
+        data = np.fromfile(f, dtype=np.float32)
+        data = data.reshape(-1, 4)
+        pcd = make_pointcloud_object(data)
         pcd.estimate_normals()
         self._scene.scene.add_geometry(f"{idx}", pcd, self.mp_material)
+        inference_result = self._inference.run_on_sample(data)
+        boxes = [gen_simple_cuboid_from_bbox(x) for x in inference_result["bboxes"]]
+        for box, label in zip(boxes, inference_result["labels"]):
+            box.class_name = self._class_names[label]
+        #print(boxes)
+        self._draw_bbox(boxes)
 
     def _populate_list(self):
         c_selected_index = self._samples_list.selected_index
-        if self._mask is None:
-            self._mask = [" "] * len(self._dataset)
-        self._samples = [f"{self._mask[idx]} {self._dataset.get_frame_path(idx)}" for idx in range(len(self._dataset))]
+        self._samples = [x.stem for x in self._dataset]
         self._samples_list.set_items(self._samples)
         self._samples_list.selected_index = c_selected_index
 
@@ -272,22 +274,31 @@ class Det3dViz:
         self._scene.setup_camera(60.0, bounds, bounds.get_center())
 
 
-
-
 def cli():
     weights = Path("/home/omuratov/workspace/fern_ml/output/fernnet/")/"epoch_500.pth"
     model = Path("/home/omuratov/workspace/fern_ml/output/fernnet/")/"pointpillars_fern3d_dynamic.py"
     inferencer = CustomModelRunner(model=str(model), weights=str(weights), device='cuda:0')
-    class_names = ['car', 'truck', 'trailer', 'human', 'reach_stacker']
-    for count, sample in enumerate(dataset_accessor()):
-        result = inferencer.run_on_sample(sample)
-        boxes = [gen_simple_cuboid_from_bbox(x) for x in result["bboxes"]]
-        for box, label in zip(boxes, result["labels"]):
-            box.class_name = class_names[label]
+    samples_dir = Path("/media/omuratov/bigdata/datasets/fern3d_v0_tiny/points/")
+    samples_dir = Path("/media/omuratov/bigdata/datasets/fern3d_b0_b3_filtered/points/")
+    gui.Application.instance.initialize()
+    app = Det3dViz(width=1200, height=800, dataset_folder=samples_dir, inference=inferencer)
+    app.reset_camera()
+    gui.Application.instance.run()
 
-        print(boxes)
-        if count > 1:
-            break
-
+#def cli():
+#    weights = Path("/home/omuratov/workspace/fern_ml/output/fernnet/")/"epoch_500.pth"
+#    model = Path("/home/omuratov/workspace/fern_ml/output/fernnet/")/"pointpillars_fern3d_dynamic.py"
+#    inferencer = CustomModelRunner(model=str(model), weights=str(weights), device='cuda:0')
+#    class_names = ['car', 'truck', 'trailer', 'human', 'reach_stacker']
+#    for count, sample in enumerate(dataset_accessor()):
+#        result = inferencer.run_on_sample(sample)
+#        boxes = [gen_simple_cuboid_from_bbox(x) for x in result["bboxes"]]
+#        for box, label in zip(boxes, result["labels"]):
+#            box.class_name = class_names[label]
+#
+#        print(boxes)
+#        if count > 1:
+#            break
+#
 if __name__ == "__main__":
     cli()

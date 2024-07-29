@@ -1,7 +1,7 @@
 # dataset description
 dataset_type = 'Fern3dDataset'
 #data_root = '/home/omuratov/bigdata/datasets/fern3d_v0_tiny/'
-data_root = '/home/omuratov/bigdata/datasets/fern3d_v0_b0/'
+data_root = '/home/omuratov/bigdata/datasets/fern3d_b0_b3_filtered/'
 class_names = ['car', 'truck', 'trailer', 'human', 'reach_stacker', 'crane', 'forklift']
 #point_cloud_range = [ 0, -39.68, -1, 50.00, 39.68, 3]
 point_cloud_range = [-20.0, -39.68, -0.25, 49.12, 39.68, 3.75]
@@ -25,12 +25,12 @@ train_pipeline = [
         jitter_std=[0.05, 0.05, 0.1],
         clip_range=[0.1, 0.1, 0.1],
     ),
-    dict(type='RandomFlip3D', flip_ratio_bev_horizontal=0.0, flip_box3d=True),
+    dict(type='RandomFlip3D', flip_ratio_bev_horizontal=0.5, flip_box3d=True),
     dict(
         type='GlobalRotScaleTrans',
-        rot_range=[-deg_to_rad_mult*01.0, deg_to_rad_mult*01.0],
+        rot_range=[-deg_to_rad_mult*10.0, deg_to_rad_mult*10.0],
         scale_ratio_range=[0.95, 1.05],
-        translation_std=[0.01, 0.01, 0.01]),
+        translation_std=[0.15, 0.15, 0.15]),
     dict(type='PointsRangeFilter', point_cloud_range=point_cloud_range),
     dict(type='ObjectRangeFilter', point_cloud_range=point_cloud_range),
     dict(type='PointShuffle'),

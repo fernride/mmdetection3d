@@ -94,7 +94,7 @@ bbox_assigner = {
         ignore_iof_thr=-1),
 }
 
-class_names = ['truck', 'trailer']# 'trailer', 'reach_stacker', 'crane']
+class_names = ['car', 'truck', 'trailer', 'human', 'reach_stacker']
 # todo figure-out order of anchors vs order of classes in meta of pickle vs order of classes in config
 # from KITTI it looks like order in the config is the main
 
@@ -193,56 +193,54 @@ visualizer = dict(
     type='Det3DLocalVisualizer', vis_backends=vis_backends, name='visualizer')
 
 
-lr = 0.01
+lr = 0.001
 
 optim_wrapper = dict(
     type='OptimWrapper',
     optimizer=dict(type='AdamW', lr=lr, betas=(0.95, 0.99), weight_decay=0.01),
     clip_grad=dict(max_norm=10, norm_type=2))
 
+coarse_optimization_iter = [0, 20]
+fine_optimization_iter = [20, 500]
+
+
 param_scheduler = [
-    # learning rate scheduler
-    # During the first 16 epochs, learning rate increases from 0 to lr * 10
-    # during the next 24 epochs, learning rate decreases from lr * 10 to
-    # lr * 1e-4
     dict(
         type='CosineAnnealingLR',
-        T_max=16,
-        eta_min=lr * 0.1,
-        begin=0,
-        end=16,
+        T_max=coarse_optimization_iter[1]-coarse_optimization_iter[0],
+        eta_min=lr * 10,
+        begin=coarse_optimization_iter[0],
+        end=coarse_optimization_iter[1],
         by_epoch=True,
         convert_to_iter_based=True),
     dict(
         type='CosineAnnealingLR',
-        T_max=24,
+        T_max=fine_optimization_iter[1]-fine_optimization_iter[0],
         eta_min=lr * 1e-4,
-        begin=16,
-        end=40,
+        begin=fine_optimization_iter[0],
+        end=fine_optimization_iter[1],
         by_epoch=True,
         convert_to_iter_based=True),
     # momentum scheduler
-    # During the first 16 epochs, momentum increases from 0 to 0.85 / 0.95
-    # during the next 24 epochs, momentum increases from 0.85 / 0.95 to 1
     dict(
         type='CosineAnnealingMomentum',
-        T_max=16,
+        T_max=coarse_optimization_iter[1]-coarse_optimization_iter[0],
         eta_min=0.85 / 0.95,
-        begin=0,
-        end=16,
+        begin=coarse_optimization_iter[0],
+        end=coarse_optimization_iter[1],
         by_epoch=True,
         convert_to_iter_based=True),
     dict(
         type='CosineAnnealingMomentum',
-        T_max=24,
+        T_max=fine_optimization_iter[1]-fine_optimization_iter[0],
         eta_min=1,
-        begin=16,
-        end=40,
+        begin=fine_optimization_iter[0],
+        end=fine_optimization_iter[1],
         by_epoch=True,
         convert_to_iter_based=True)
 ]
 
-train_cfg = dict(by_epoch=True, max_epochs=40, val_interval=1)
+train_cfg = dict(by_epoch=True, max_epochs=fine_optimization_iter[1], val_interval=1)
 val_cfg = dict()
 test_cfg = dict()
 auto_scale_lr = dict(enable=False, base_batch_size=48)

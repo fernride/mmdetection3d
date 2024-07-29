@@ -7,13 +7,13 @@ from .det3d_dataset import Det3DDataset
 from mmdet3d.structures import LiDARInstance3DBoxes
 
 COLOR_MAP = {
-    'car': (106, 0, 228),
-    'truck': (119, 11, 32),
-    'trailer': (0, 0, 192),
-    'human': (165, 42, 42),
-    'reach_stacker': (255, 77, 255),
-    'crane': (197, 226, 255),
-    'forklift': (0, 60, 100),
+    'car': (106, 0, 228), # velvet
+    'truck': (121, 36, 206), # violet
+    'trailer': (0, 0, 192), # dark blue
+    'human': (255, 82, 82), # light red
+    'reach_stacker': (249, 155, 15), # soft orange
+    'crane': (55, 255, 175), # menthol green
+    'forklift': (240, 240, 128), # soft yellow
 }
 
 

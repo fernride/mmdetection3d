@@ -275,8 +275,8 @@ class Det3dViz:
 
 
 def cli():
-    weights = Path("/home/omuratov/workspace/fern_ml/output/fernnet/")/"epoch_500.pth"
-    model = Path("/home/omuratov/workspace/fern_ml/output/fernnet/")/"pointpillars_fern3d_dynamic.py"
+    weights = Path("/home/omuratov/workspace/fern_ml/output/fernnet/fernnet_500")/"epoch_500.pth"
+    model = Path("/home/omuratov/workspace/fern_ml/output/fernnet/fernnet_500")/"pointpillars_fern3d_dynamic.py"
     inferencer = CustomModelRunner(model=str(model), weights=str(weights), device='cuda:0')
     samples_dir = Path("/media/omuratov/bigdata/datasets/fern3d_v0_tiny/points/")
     samples_dir = Path("/media/omuratov/bigdata/datasets/fern3d_b0_b3_filtered/points/")

@@ -21,8 +21,8 @@ anchors_info = {
         "sizes": [12.8, 2.75, 3.38],
     },
     "human": {
-        "ranges": [max(x_min, 0.), max(y_min, -15.0), -1.0, min(x_max, 35.0), min(y_max, 15.0), 1.0],
-        "sizes": [0.6, 0.6, 1.78],
+        "ranges": [max(x_min, -12.0), max(y_min, -20.0), -0.5, min(x_max, 35.0), min(y_max, 20.0), 1.5],
+        "sizes": [0.8, 0.7, 1.78],
     },
     "car": {
         "ranges": [max(x_min, 0.), max(y_min, -20.0), -1.0, min(x_max, 50.0), min(y_max, 20.0), 0.5],
@@ -60,9 +60,9 @@ bbox_assigner = {
     "human": dict(
         type='Max3DIoUAssigner',
         iou_calculator=dict(type='mmdet3d.BboxOverlapsNearest3D'),
-        pos_iou_thr=0.6,
-        neg_iou_thr=0.45,
-        min_pos_iou=0.45,
+        pos_iou_thr=0.4,
+        neg_iou_thr=0.3,
+        min_pos_iou=0.3,
         ignore_iof_thr=-1),
     "car": dict(
         type='Max3DIoUAssigner',
@@ -95,6 +95,7 @@ bbox_assigner = {
 }
 
 class_names = ['car', 'truck', 'trailer', 'human', 'reach_stacker']
+class_names = ['human']
 # todo figure-out order of anchors vs order of classes in meta of pickle vs order of classes in config
 # from KITTI it looks like order in the config is the main
 
@@ -201,7 +202,7 @@ optim_wrapper = dict(
     clip_grad=dict(max_norm=10, norm_type=2))
 
 coarse_optimization_iter = [0, 20]
-fine_optimization_iter = [20, 500]
+fine_optimization_iter = [20, 40]
 
 
 param_scheduler = [

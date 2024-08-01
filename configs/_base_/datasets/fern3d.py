@@ -1,16 +1,41 @@
 # dataset description
 dataset_type = 'Fern3dDataset'
 #data_root = '/home/omuratov/bigdata/datasets/fern3d_v0_tiny/'
-data_root = '/home/omuratov/bigdata/datasets/fern3d_b0_b3_filtered/'
+dataset_folder = '/home/omuratov/bigdata/datasets' 
+data_root = f'{dataset_folder}/fern3d_b0_b3_filtered/'
 class_names = ['car', 'truck', 'trailer', 'human', 'reach_stacker', 'crane', 'forklift']
 #point_cloud_range = [ 0, -39.68, -1, 50.00, 39.68, 3]
 point_cloud_range = [-20.0, -39.68, -0.25, 49.12, 39.68, 3.75]
 input_modality = dict(use_lidar=True, use_camera=False)
 metainfo = dict(classes=class_names)
+metainfo = dict(classes=['human'])#class_names)
+
+samples_folder = f'{dataset_folder}/fern_samples/'
 
 backend_args = None
 deg_to_rad_mult=3.14159265358979323846 / 180.0
 
+
+db_sampler = dict(
+    backend_args=None,
+    classes=[
+        'human',
+    ],
+    data_root=samples_folder,
+    info_path=f'{samples_folder}/samples_train.pkl',
+    points_loader=dict(
+        backend_args=None,
+        coord_type='LIDAR',
+        load_dim=4,
+        type='LoadPointsFromFile',
+        use_dim=4),
+    prepare=dict(
+        filter_by_difficulty=[
+            -1,
+        ],
+        filter_by_min_points=dict(human=10)),
+    rate=1.0,
+    sample_groups=dict(human=5))
 
 train_pipeline = [
     dict(
@@ -20,6 +45,7 @@ train_pipeline = [
         use_dim=4,
         backend_args=backend_args),
     dict(type='LoadAnnotations3D', with_bbox_3d=True, with_label_3d=True),
+    dict(type='ObjectSample', db_sampler=db_sampler),
     dict(
         type='RandomJitterPoints',
         jitter_std=[0.05, 0.05, 0.1],
@@ -94,6 +120,7 @@ train_dataloader = dict(
             test_mode=False,
             metainfo=metainfo,
             box_type_3d='LiDAR',
+            filter_empty_gt=True,
             backend_args=backend_args)))
 
 test_dataloader = dict(

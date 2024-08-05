@@ -95,7 +95,7 @@ bbox_assigner = {
 }
 
 class_names = ['car', 'truck', 'trailer', 'human', 'reach_stacker']
-class_names = ['human']
+#class_names = ['human']
 # todo figure-out order of anchors vs order of classes in meta of pickle vs order of classes in config
 # from KITTI it looks like order in the config is the main
 
@@ -202,7 +202,7 @@ optim_wrapper = dict(
     clip_grad=dict(max_norm=10, norm_type=2))
 
 coarse_optimization_iter = [0, 20]
-fine_optimization_iter = [20, 40]
+fine_optimization_iter = [20, 1500]
 
 
 param_scheduler = [

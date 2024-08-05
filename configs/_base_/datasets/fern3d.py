@@ -8,7 +8,7 @@ class_names = ['car', 'truck', 'trailer', 'human', 'reach_stacker', 'crane', 'fo
 point_cloud_range = [-20.0, -39.68, -0.25, 49.12, 39.68, 3.75]
 input_modality = dict(use_lidar=True, use_camera=False)
 metainfo = dict(classes=class_names)
-metainfo = dict(classes=['human'])#class_names)
+#metainfo = dict(classes=['human'])#class_names)
 
 samples_folder = f'{dataset_folder}/fern_samples/'
 
@@ -33,7 +33,7 @@ db_sampler = dict(
         filter_by_difficulty=[
             -1,
         ],
-        filter_by_min_points=dict(human=10)),
+        filter_by_min_points=dict(human=50)),
     rate=1.0,
     sample_groups=dict(human=5))
 

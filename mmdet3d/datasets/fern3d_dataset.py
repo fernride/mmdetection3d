@@ -51,11 +51,15 @@ class Fern3dDataset(Det3DDataset):
 
 
     def parse_ann_info(self, info: dict) -> dict | None:
+        # custom fernride annotation not used in training explicitly
+        if 'fern_info' in info.keys():
+            del info['fern_info']
         ann_info = super().parse_ann_info(info)
         if ann_info is None:
             ann_info = dict()
             ann_info['gt_labels_3d'] = np.zeros(0, dtype=np.int64)
             ann_info['gt_bboxes_3d'] = np.zeros((0, 7), dtype=np.float32)
+            ann_info['has_load'] = np.zeros(0, dtype=np.int64)
         
         gt_bboxes_3d = LiDARInstance3DBoxes(ann_info['gt_bboxes_3d'])
         ann_info['gt_bboxes_3d'] = gt_bboxes_3d

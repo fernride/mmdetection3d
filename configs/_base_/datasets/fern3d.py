@@ -3,6 +3,7 @@ dataset_type = 'Fern3dDataset'
 #data_root = '/home/omuratov/bigdata/datasets/fern3d_v0_tiny/'
 dataset_folder = '/home/omuratov/bigdata/datasets' 
 data_root = f'{dataset_folder}/fern3d_b0_b3_filtered/'
+data_root = '/home/omuratov/bigdata/pipeline_v0/segments/00000/training/scan'
 class_names = ['car', 'truck', 'trailer', 'human', 'reach_stacker', 'crane', 'forklift']
 #point_cloud_range = [ 0, -39.68, -1, 50.00, 39.68, 3]
 point_cloud_range = [-20.0, -39.68, -0.25, 49.12, 39.68, 3.75]

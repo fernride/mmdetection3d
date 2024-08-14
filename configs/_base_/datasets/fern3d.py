@@ -104,7 +104,7 @@ eval_pipeline = [
 data_prefix = dict(pts='points/', img='', sweeps='')
 
 train_dataloader = dict(
-    batch_size=6,
+    batch_size=6*5,
     num_workers=4,
     persistent_workers=True,
     sampler=dict(type='DefaultSampler', shuffle=True),

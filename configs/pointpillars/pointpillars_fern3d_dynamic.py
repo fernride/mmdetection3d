@@ -244,4 +244,4 @@ param_scheduler = [
 train_cfg = dict(by_epoch=True, max_epochs=fine_optimization_iter[1], val_interval=1)
 val_cfg = dict()
 test_cfg = dict()
-auto_scale_lr = dict(enable=False, base_batch_size=48*4)
+auto_scale_lr = dict(enable=False, base_batch_size=48)

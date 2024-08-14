@@ -3,7 +3,7 @@ dataset_type = 'Fern3dDataset'
 #data_root = '/home/omuratov/bigdata/datasets/fern3d_v0_tiny/'
 dataset_folder = '/home/omuratov/bigdata/datasets' 
 data_root = f'{dataset_folder}/fern3d_b0_b3_filtered/'
-data_root = '/home/omuratov/bigdata/pipeline_v0/segments/00000/training/scan'
+#data_root = '/home/omuratov/bigdata/pipeline_v0/segments/00000/training/scan'
 class_names = ['car', 'truck', 'trailer', 'human', 'reach_stacker', 'crane', 'forklift']
 #point_cloud_range = [ 0, -39.68, -1, 50.00, 39.68, 3]
 point_cloud_range = [-20.0, -39.68, -0.25, 49.12, 39.68, 3.75]
@@ -46,7 +46,7 @@ train_pipeline = [
         use_dim=4,
         backend_args=backend_args),
     dict(type='LoadAnnotations3D', with_bbox_3d=True, with_label_3d=True),
-    dict(type='ObjectSample', db_sampler=db_sampler),
+    #dict(type='ObjectSample', db_sampler=db_sampler),
     dict(
         type='RandomJitterPoints',
         jitter_std=[0.05, 0.05, 0.1],

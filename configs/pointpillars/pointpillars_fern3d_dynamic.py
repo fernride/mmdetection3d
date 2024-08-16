@@ -201,8 +201,8 @@ optim_wrapper = dict(
     optimizer=dict(type='AdamW', lr=lr, betas=(0.95, 0.99), weight_decay=0.01),
     clip_grad=dict(max_norm=10, norm_type=2))
 
-coarse_optimization_iter = [0, 20]
-fine_optimization_iter = [20, 1500]
+coarse_optimization_iter = [0, 40]
+fine_optimization_iter = [40, 2*1500]
 
 
 param_scheduler = [

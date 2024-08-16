@@ -2,7 +2,8 @@
 dataset_type = 'Fern3dDataset'
 #data_root = '/home/omuratov/bigdata/datasets/fern3d_v0_tiny/'
 dataset_folder = '/home/omuratov/bigdata/datasets' 
-data_root = f'{dataset_folder}/fern3d_b0_b3_filtered/'
+#data_root = f'{dataset_folder}/fern3d_b0_b3_filtered/'
+data_root = f'{dataset_folder}/fern3d_combined'
 #data_root = '/home/omuratov/bigdata/pipeline_v0/segments/00000/training/scan'
 class_names = ['car', 'truck', 'trailer', 'human', 'reach_stacker', 'crane', 'forklift']
 #point_cloud_range = [ 0, -39.68, -1, 50.00, 39.68, 3]
@@ -104,7 +105,7 @@ eval_pipeline = [
 data_prefix = dict(pts='points/', img='', sweeps='')
 
 train_dataloader = dict(
-    batch_size=6*5,
+    batch_size=6*6,
     num_workers=4,
     persistent_workers=True,
     sampler=dict(type='DefaultSampler', shuffle=True),

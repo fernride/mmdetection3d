@@ -276,7 +276,7 @@ class Det3dViz:
 
 def cli():
     #model_path = Path("/home/omuratov/workspace/fern_ml/output/fernnet/fernnet_human_500")
-    model_path = Path("/home/omuratov/workspace/fern_ml/output/fernnet/fernnet_500")
+    model_path = Path("/home/omuratov/workspace/fern_ml/output/fernnet/fern3d_dynamic_500_2024_09_12")
     model = model_path/"pointpillars_fern3d_dynamic.py"
     weights = [x for x in model_path.iterdir() if x.suffix == ".pth"][0]
     #weights = Path("/home/omuratov/workspace/fern_ml/output/fernnet/fernnet_ped_500")/"epoch_500.pth"

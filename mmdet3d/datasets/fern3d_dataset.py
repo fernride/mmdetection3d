@@ -6,14 +6,32 @@ from mmdet3d.registry import DATASETS
 from .det3d_dataset import Det3DDataset
 from mmdet3d.structures import LiDARInstance3DBoxes
 
+CLASS_NAMES = [
+    "car",
+    "truck",
+    "trailer",
+    "human",
+    "reach_stacker",
+    "crane",
+    "forklift",
+    "mast",
+    "barrier",
+    "sign",
+    "machine_other",
+]
+
 COLOR_MAP = {
-    'car': (106, 0, 228), # velvet
-    'truck': (121, 36, 206), # violet
-    'trailer': (0, 0, 192), # dark blue
-    'human': (255, 82, 82), # light red
-    'reach_stacker': (249, 155, 15), # soft orange
-    'crane': (55, 255, 175), # menthol green
-    'forklift': (240, 240, 128), # soft yellow
+    "car": (106, 0, 228),  # velvet
+    "truck": (121, 36, 206),  # violet
+    "trailer": (0, 0, 192),  # dark blue
+    "human": (255, 82, 82),  # light red
+    "reach_stacker": (249, 155, 15),  # soft orange
+    "crane": (55, 255, 175),  # menthol green
+    "forklift": (240, 240, 128),  # soft yellow
+    "barrier": (240, 240, 128),  # soft yellow,
+    "mast": (0, 255, 255),  # light blue
+    "sign": (255, 255, 0),  # yellow
+    "machine_other": (255, 0, 255),  # pink
 }
 
 
@@ -25,8 +43,8 @@ class Fern3dDataset(Det3DDataset):
     """
 
     METAINFO = {
-        'classes': [x for x in COLOR_MAP.keys()],
-        'palette': [COLOR_MAP[x] for x in COLOR_MAP.keys()]
+        'classes': CLASS_NAMES,
+        'palette': [COLOR_MAP[x] for x in CLASS_NAMES],
     }
 
     def __init__(self,

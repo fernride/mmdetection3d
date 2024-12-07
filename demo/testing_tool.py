@@ -24,6 +24,7 @@ InstanceList = List[InstanceData]
 PredType = Union[InstanceData, InstanceList]
 InputsType = Union[InputType, Sequence[InputType]]
 
+
 COLOR_MAP = {
     "car": (106, 0, 228),  # velvet
     "truck": (121, 36, 206),  # violet
@@ -32,6 +33,9 @@ COLOR_MAP = {
     "reach_stacker": (249, 155, 15),  # soft orange
     "crane": (55, 255, 175),  # menthol green
     "forklift": (240, 240, 128),  # soft yellow
+    "barrier": (240, 0, 16),  #
+    "mast": (0, 255, 255),  # light blue
+    "sign": (255, 255, 0),  # yellow
 }
 
 
@@ -156,7 +160,10 @@ class Det3dViz:
         self._scene.set_view_controls(gui.SceneWidget.Controls.ROTATE_CAMERA_SPHERE)
         self._dataset = sorted([f for f in dataset_folder.iterdir() if f.is_file() and f.suffix == ".bin"])
         self._inference = inference
-        self._class_names = ['car', 'truck', 'trailer', 'human', 'reach_stacker']
+        #self._class_names = ['car', 'truck', 'trailer', 'human', 'reach_stacker']
+        self._class_names = [x for x in COLOR_MAP.keys()]
+        # should be sourced from model config
+        self._class_names = ["mast", "barrier", "sign"]
 
         # side panel
         em = self.window.theme.font_size
@@ -165,7 +172,7 @@ class Det3dViz:
         # material to show point clouds
         self.mp_material = rendering.MaterialRecord()
         self.mp_material.shader = "defaultUnlit"
-        self.mp_material.point_size = 1.0
+        self.mp_material.point_size = 1.5
 
         # material to show bounding boxes
         self.bb_material = dict()
@@ -277,7 +284,9 @@ class Det3dViz:
 def cli():
     #model_path = Path("/home/omuratov/workspace/fern_ml/output/fernnet/fernnet_human_500")
     model_path = Path("/home/omuratov/workspace/fern_ml/output/fernnet/fern3d_dynamic_500_2024_09_12")
-    model = model_path/"pointpillars_fern3d_dynamic.py"
+    model_path = Path("/home/omuratov/workspace/fern_ml/output/fernnet/fern3d_static_2024_11_27_4")
+    #model = model_path/"pointpillars_fern3d_dynamic.py"
+    model = model_path/"pp_fern3d_static_only.py"
     weights = [x for x in model_path.iterdir() if x.suffix == ".pth"][0]
     #weights = Path("/home/omuratov/workspace/fern_ml/output/fernnet/fernnet_ped_500")/"epoch_500.pth"
     #model = Path("/home/omuratov/workspace/fern_ml/output/fernnet/fernnet_ped_500")/"pointpillars_fern3d_dynamic.py"

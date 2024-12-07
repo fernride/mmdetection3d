@@ -4,110 +4,33 @@ _base_ = [
     '../_base_/default_runtime.py'
 ]
 
-#point_cloud_range = [-20.0, -39.68, -0.25, 49.12, 39.68, 3.75]
-point_cloud_range = [-20.0, -51.20, -0.25, 69.6, 51.20, 19.75]
+class_names = ["mast", "barrier", "sign"]
+voxel_size = [0.16, 0.16, 8]
+scatter_shape = [496, 432] # y x
+
+
+point_cloud_range = [-20.0, -39.68, -0.25, 49.12, 39.68, -0.25+8.0]
 x_min = point_cloud_range[0] + 1.0
 x_max = point_cloud_range[3] - 1.0
 y_min = point_cloud_range[1] + 1.0
 y_max = point_cloud_range[4] - 1.0
 
 anchors_info = {
-    "truck": {
-        "ranges": [x_min, y_min, 0.0, x_max, y_max, 0.0],
-        "sizes": [5.94, 2.65, 3.65],
-    },
-    "trailer": {
-        "ranges": [x_min, y_min, 0.0, x_max, y_max, 0.0],
-        "sizes": [12.8, 2.75, 3.38],
-    },
-    "human": {
-        "ranges": [max(x_min, -12.0), max(y_min, -12.0), 0.0, min(x_max, 20.0), min(y_max, 12.0), 0.0],
-        "sizes": [0.8, 0.7, 1.78],
-    },
-    "sign": { # pedestrian copy
-        "ranges": [max(x_min, -12.0), max(y_min, -12.0), 0.0, min(x_max, 20.0), min(y_max, 12.0), 0.0],
-        "sizes": [0.8, 0.7, 1.78],
-    },
-    "car": {
-        "ranges": [x_min, y_min, 0.0, x_max, y_max, 0.0],
-        "sizes": [4.43, 1.77, 1.70],
-    },
-    "crane": {
-        "ranges": [x_min, y_min, 0.0, x_max, y_max, 0.0],
-        "sizes": [10.5, 1.0, 2.2],
-    },
-    "forklift": {
-        "ranges": [x_min, y_min, 0.0, x_max, y_max, 0.0],
-        "sizes": [2.5, 1.2, 1.93],
-    },
-    "machine_other": { # forklift copy
-        "ranges": [x_min, y_min, 0.0, x_max, y_max, 0.0],
-        "sizes": [2.5, 1.2, 1.93],
-    },
-    "reach_stacker": {
-        "ranges": [x_min, y_min, 0.0, x_max, y_max, 0.0],
-        "sizes": [6.0, 2.5, 2.5],
-    },
     "mast": {
-        "ranges": [x_min, y_min, 0.0, x_max, y_max, 0.0],
-        "sizes": [2.0, 2.0, 10.0],
+        "ranges": [x_min, y_min, -1.0, x_max, y_max, 8.00],
+        "sizes": [2.00, 2.00, 8.00],
     },
     "barrier": {
-        "ranges": [x_min, y_min, 0.0, x_max, y_max, 0.0],
-        "sizes": [0.6, 0.6, 1.0],
+        "ranges": [x_min, y_min, -1.0, x_max, y_max, 1.0],
+        "sizes": [1.0, 0.6, 1.0],
+    },
+    "sign": {
+        "ranges": [x_min, y_min, -1.0, x_max, y_max, 3.0],
+        "sizes": [0.5, 0.5, 2.5],
     },
 }
 
 bbox_assigner = {
-    "truck": dict(
-        type='Max3DIoUAssigner',
-        iou_calculator=dict(type='mmdet3d.BboxOverlapsNearest3D'),
-        pos_iou_thr=0.6,
-        neg_iou_thr=0.45,
-        min_pos_iou=0.45,
-        ignore_iof_thr=-1),
-    "trailer": dict(
-        type='Max3DIoUAssigner',
-        iou_calculator=dict(type='mmdet3d.BboxOverlapsNearest3D'),
-        pos_iou_thr=0.6,
-        neg_iou_thr=0.45,
-        min_pos_iou=0.45,
-        ignore_iof_thr=-1),
-    "human": dict(
-        type='Max3DIoUAssigner',
-        iou_calculator=dict(type='mmdet3d.BboxOverlapsNearest3D'),
-        pos_iou_thr=0.4,
-        neg_iou_thr=0.3,
-        min_pos_iou=0.3,
-        ignore_iof_thr=-1),
-    "car": dict(
-        type='Max3DIoUAssigner',
-        iou_calculator=dict(type='mmdet3d.BboxOverlapsNearest3D'),
-        pos_iou_thr=0.6,
-        neg_iou_thr=0.45,
-        min_pos_iou=0.45,
-        ignore_iof_thr=-1),
-    "crane": dict(
-        type='Max3DIoUAssigner',
-        iou_calculator=dict(type='mmdet3d.BboxOverlapsNearest3D'),
-        pos_iou_thr=0.6,
-        neg_iou_thr=0.45,
-        min_pos_iou=0.45,
-        ignore_iof_thr=-1),
-    "forklift": dict(
-        type='Max3DIoUAssigner',
-        iou_calculator=dict(type='mmdet3d.BboxOverlapsNearest3D'),
-        pos_iou_thr=0.6,
-        neg_iou_thr=0.45,
-        min_pos_iou=0.45,
-        ignore_iof_thr=-1),
-    "reach_stacker": dict(
-        type='Max3DIoUAssigner',
-        iou_calculator=dict(type='mmdet3d.BboxOverlapsNearest3D'),
-        pos_iou_thr=0.6,
-        neg_iou_thr=0.45,
-        min_pos_iou=0.45,
-        ignore_iof_thr=-1),
     "mast": dict(
         type='Max3DIoUAssigner',
         iou_calculator=dict(type='mmdet3d.BboxOverlapsNearest3D'),
@@ -125,42 +48,15 @@ bbox_assigner = {
     "sign": dict(
         type='Max3DIoUAssigner',
         iou_calculator=dict(type='mmdet3d.BboxOverlapsNearest3D'),
-        pos_iou_thr=0.6,
-        neg_iou_thr=0.45,
-        min_pos_iou=0.45,
-        ignore_iof_thr=-1),
-    "machine_other": dict(
-        type='Max3DIoUAssigner',
-        iou_calculator=dict(type='mmdet3d.BboxOverlapsNearest3D'),
-        pos_iou_thr=0.6,
-        neg_iou_thr=0.45,
-        min_pos_iou=0.45,
+        pos_iou_thr=0.4,
+        neg_iou_thr=0.3,
+        min_pos_iou=0.3,
         ignore_iof_thr=-1),
 }
 
-class_names = [
-    "car",
-    "truck",
-    "trailer",
-    "human",
-    "reach_stacker",
-    "crane",
-    "forklift",
-    "mast",
-    #"barrier",
-    #"sign",
-    "machine_other",]
-
-#class_names = ['car', 'truck', 'trailer', 'human', 'reach_stacker']
-#class_names = ['human']
-# todo figure-out order of anchors vs order of classes in meta of pickle vs order of classes in config
-# from KITTI it looks like order in the config is the main
-
 # TODO define ranges
 #voxel_size = [0.16, 0.16, 4]
-voxel_size = [0.2, 0.2, 20]
 #scatter_shape = [496, 432] # y x
-scatter_shape = [512, 448]
 
 model = dict(
     type='VoxelNet',
@@ -217,7 +113,7 @@ model = dict(
             type='mmdet.SmoothL1Loss', beta=1.0 / 9.0, loss_weight=2.0),
         loss_dir=dict(
             type='mmdet.CrossEntropyLoss', use_sigmoid=False,
-            loss_weight=0.2)),
+            loss_weight=0.0)),
     # model training and testing settings
     train_cfg=dict(
         assigner=[bbox_assigner[class_name] for class_name in class_names],
@@ -260,9 +156,8 @@ optim_wrapper = dict(
     optimizer=dict(type='AdamW', lr=lr, betas=(0.95, 0.99), weight_decay=0.01),
     clip_grad=dict(max_norm=10, norm_type=2))
 
-coarse_optimization_iter = [0, 40]
-fine_optimization_iter = [40, 500]
-fine_optimization_iter = [40, 100]  # fast
+coarse_optimization_iter = [0, 20]
+fine_optimization_iter = [20, 80]
 
 
 param_scheduler = [
@@ -304,4 +199,5 @@ param_scheduler = [
 train_cfg = dict(by_epoch=True, max_epochs=fine_optimization_iter[1], val_interval=1)
 val_cfg = dict()
 test_cfg = dict()
-auto_scale_lr = dict(enable=False, base_batch_size=48)
+#auto_scale_lr = dict(enable=False, base_batch_size=48)
+auto_scale_lr = dict(enable=False, base_batch_size=8)

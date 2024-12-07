@@ -4,11 +4,26 @@ dataset_type = 'Fern3dDataset'
 dataset_folder = '/home/omuratov/bigdata/datasets' 
 #data_root = f'{dataset_folder}/fern3d_b0_b3_filtered/'
 #data_root = f'{dataset_folder}/fern3d_combined'
-data_root = f'{dataset_folder}/fern_v0_v3_v4_v7_filtered'
+#data_root = f'{dataset_folder}/fern_v0_v3_v4_v7_filtered'
+#data_root = f'{dataset_folder}/fern3d_static_v0'
+data_root = f'{dataset_folder}/fern3d_b1-b7_all'
 #data_root = '/home/omuratov/bigdata/pipeline_v0/segments/00000/training/scan'
-class_names = ['car', 'truck', 'trailer', 'human', 'reach_stacker', 'crane', 'forklift']
+#class_names = ['car', 'truck', 'trailer', 'human', 'reach_stacker', 'crane', 'forklift']
+class_names = [
+    "car",
+    "truck",
+    "trailer",
+    "human",
+    "reach_stacker",
+    "crane",
+    "forklift",
+    "mast",
+    "barrier",
+    "sign",
+    "machine_other",]
+#class_names = ["mast", "barrier", "sign"]
 #point_cloud_range = [ 0, -39.68, -1, 50.00, 39.68, 3]
-point_cloud_range = [-20.0, -39.68, -0.25, 49.12, 39.68, 3.75]
+point_cloud_range = [-20.0, -51.20, -0.25, 69.6, 51.20, 19.75]
 input_modality = dict(use_lidar=True, use_camera=False)
 metainfo = dict(classes=class_names)
 #metainfo = dict(classes=['human'])#class_names)
@@ -48,7 +63,7 @@ train_pipeline = [
         use_dim=4,
         backend_args=backend_args),
     dict(type='LoadAnnotations3D', with_bbox_3d=True, with_label_3d=True),
-    dict(type='ObjectSample', db_sampler=db_sampler),
+    #dict(type='ObjectSample', db_sampler=db_sampler),
     dict(
         type='RandomJitterPoints',
         jitter_std=[0.05, 0.05, 0.1],
@@ -61,6 +76,7 @@ train_pipeline = [
         scale_ratio_range=[0.95, 1.05],
         translation_std=[0.15, 0.15, 0.15]),
     dict(type='PointsRangeFilter', point_cloud_range=point_cloud_range),
+#    dict(type='ObjectNameFilter', classes=['mast']),
     dict(type='ObjectRangeFilter', point_cloud_range=point_cloud_range),
     dict(type='PointShuffle'),
     dict(
@@ -90,6 +106,8 @@ test_pipeline = [
             dict(
                 type='PointsRangeFilter', point_cloud_range=point_cloud_range)
         ]),
+    #dict(type='LoadAnnotations3D', with_bbox_3d=True, with_label_3d=True),
+    #dict(type='ObjectNameFilter', classes=['mast']),
     dict(type='Pack3DDetInputs', keys=['points'])
 ]
 
@@ -104,9 +122,10 @@ eval_pipeline = [
 ]
 
 data_prefix = dict(pts='points/', img='', sweeps='')
-
+batch_mult = 8
+batch_mult = 6
 train_dataloader = dict(
-    batch_size=6*8,
+    batch_size=batch_mult*6,
     num_workers=4,
     persistent_workers=True,
     sampler=dict(type='DefaultSampler', shuffle=True),

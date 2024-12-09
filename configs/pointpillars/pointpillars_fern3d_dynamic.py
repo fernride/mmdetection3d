@@ -13,15 +13,15 @@ y_max = point_cloud_range[4] - 1.0
 
 anchors_info = {
     "truck": {
-        "ranges": [x_min, y_min, 0.0, x_max, y_max, 0.0],
+        "ranges": [x_min, y_min, 0.0, x_max, y_max, 4.0],
         "sizes": [5.94, 2.65, 3.65],
     },
     "trailer": {
-        "ranges": [x_min, y_min, 0.0, x_max, y_max, 0.0],
+        "ranges": [x_min, y_min, 0.0, x_max, y_max, 4.0],
         "sizes": [12.8, 2.75, 3.38],
     },
     "human": {
-        "ranges": [max(x_min, -12.0), max(y_min, -12.0), 0.0, min(x_max, 20.0), min(y_max, 12.0), 0.0],
+        "ranges": [max(x_min, -12.0), max(y_min, -12.0), 0.0, min(x_max, 20.0), min(y_max, 12.0), 2.0],
         "sizes": [0.8, 0.7, 1.78],
     },
     "sign": { # pedestrian copy
@@ -29,27 +29,27 @@ anchors_info = {
         "sizes": [0.8, 0.7, 1.78],
     },
     "car": {
-        "ranges": [x_min, y_min, 0.0, x_max, y_max, 0.0],
+        "ranges": [x_min, y_min, 0.0, x_max, y_max, 2.0],
         "sizes": [4.43, 1.77, 1.70],
     },
     "crane": {
-        "ranges": [x_min, y_min, 0.0, x_max, y_max, 0.0],
+        "ranges": [x_min, y_min, 0.0, x_max, y_max, 20.0],
         "sizes": [10.5, 1.0, 2.2],
     },
     "forklift": {
-        "ranges": [x_min, y_min, 0.0, x_max, y_max, 0.0],
+        "ranges": [x_min, y_min, 0.0, x_max, y_max, 4.0],
         "sizes": [2.5, 1.2, 1.93],
     },
     "machine_other": { # forklift copy
-        "ranges": [x_min, y_min, 0.0, x_max, y_max, 0.0],
+        "ranges": [x_min, y_min, 0.0, x_max, y_max, 4.0],
         "sizes": [2.5, 1.2, 1.93],
     },
     "reach_stacker": {
-        "ranges": [x_min, y_min, 0.0, x_max, y_max, 0.0],
+        "ranges": [x_min, y_min, 0.0, x_max, y_max, 10.0],
         "sizes": [6.0, 2.5, 2.5],
     },
     "mast": {
-        "ranges": [x_min, y_min, 0.0, x_max, y_max, 0.0],
+        "ranges": [x_min, y_min, 0.0, x_max, y_max, 20.0],
         "sizes": [2.0, 2.0, 10.0],
     },
     "barrier": {
@@ -76,7 +76,7 @@ bbox_assigner = {
     "human": dict(
         type='Max3DIoUAssigner',
         iou_calculator=dict(type='mmdet3d.BboxOverlapsNearest3D'),
-        pos_iou_thr=0.4,
+        pos_iou_thr=0.8,
         neg_iou_thr=0.3,
         min_pos_iou=0.3,
         ignore_iof_thr=-1),
@@ -90,7 +90,7 @@ bbox_assigner = {
     "crane": dict(
         type='Max3DIoUAssigner',
         iou_calculator=dict(type='mmdet3d.BboxOverlapsNearest3D'),
-        pos_iou_thr=0.6,
+        pos_iou_thr=0.9,
         neg_iou_thr=0.45,
         min_pos_iou=0.45,
         ignore_iof_thr=-1),
@@ -111,9 +111,9 @@ bbox_assigner = {
     "mast": dict(
         type='Max3DIoUAssigner',
         iou_calculator=dict(type='mmdet3d.BboxOverlapsNearest3D'),
-        pos_iou_thr=0.6,
-        neg_iou_thr=0.45,
-        min_pos_iou=0.45,
+        pos_iou_thr=0.9,
+        neg_iou_thr=0.25,
+        min_pos_iou=0.25,
         ignore_iof_thr=-1),
     "barrier": dict(
         type='Max3DIoUAssigner',

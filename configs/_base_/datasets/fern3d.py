@@ -22,8 +22,7 @@ class_names = [
     "sign",
     "machine_other",]
 #class_names = ["mast", "barrier", "sign"]
-#point_cloud_range = [ 0, -39.68, -1, 50.00, 39.68, 3]
-point_cloud_range = [-20.0, -51.20, -0.25, 69.6, 51.20, 19.75]
+point_cloud_range = [-20.0, -50.0, -0.25, 60.0, 50.0, 19.75]
 input_modality = dict(use_lidar=True, use_camera=False)
 metainfo = dict(classes=class_names)
 #metainfo = dict(classes=['human'])#class_names)

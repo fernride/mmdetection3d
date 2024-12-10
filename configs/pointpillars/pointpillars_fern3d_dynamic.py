@@ -5,7 +5,8 @@ _base_ = [
 ]
 
 #point_cloud_range = [-20.0, -39.68, -0.25, 49.12, 39.68, 3.75]
-point_cloud_range = [-20.0, -51.20, -0.25, 69.6, 51.20, 19.75]
+#point_cloud_range = [-20.0, -51.20, -0.25, 69.6, 51.20, 19.75]
+point_cloud_range = [-20.0, -50.0, -0.25, 60.0, 50.0, 19.75]
 x_min = point_cloud_range[0] + 1.0
 x_max = point_cloud_range[3] - 1.0
 y_min = point_cloud_range[1] + 1.0

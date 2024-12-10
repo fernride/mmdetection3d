@@ -285,7 +285,7 @@ def cli():
     #model_path = Path("/home/omuratov/workspace/fern_ml/output/fernnet/fernnet_human_500")
     model_path = Path("/home/omuratov/workspace/fern_ml/output/fernnet/fern3d_dynamic_500_2024_09_12")
     #model_path = Path("/home/omuratov/workspace/fern_ml/output/fernnet/fern3d_static_2024_11_27_4")
-    model_path = Path("/home/omuratov/workspace/fern_ml/output/fernnet/fern3d_b1-b7_9000/")
+    model_path = Path("/home/omuratov/workspace/fern_ml/output/fernnet/fern3d_b1-b7_9000_v2/")
     model = model_path/"pointpillars_fern3d_dynamic.py"
     #model = model_path/"pp_fern3d_static_only.py"
     weights = [x for x in model_path.iterdir() if x.suffix == ".pth"][0]
@@ -294,7 +294,7 @@ def cli():
     inferencer = CustomModelRunner(model=str(model), weights=str(weights), device='cuda:0')
     samples_dir = Path("/media/omuratov/bigdata/datasets/fern3d_v0_tiny/points/")
     samples_dir = Path("/media/omuratov/bigdata/datasets/fern3d_b0_b3_filtered/points/")
-    samples_dir = Path("/media/omuratov/bigdata/datasets/fern3d_b1-b7_all/points/")
+    #samples_dir = Path("/media/omuratov/bigdata/datasets/fern3d_b1-b7_all/points/")
     gui.Application.instance.initialize()
     app = Det3dViz(width=1200, height=800, dataset_folder=samples_dir, inference=inferencer)
     app.reset_camera()

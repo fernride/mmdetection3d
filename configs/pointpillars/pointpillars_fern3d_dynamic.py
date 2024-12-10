@@ -76,7 +76,7 @@ bbox_assigner = {
     "human": dict(
         type='Max3DIoUAssigner',
         iou_calculator=dict(type='mmdet3d.BboxOverlapsNearest3D'),
-        pos_iou_thr=0.8,
+        pos_iou_thr=0.5,
         neg_iou_thr=0.3,
         min_pos_iou=0.3,
         ignore_iof_thr=-1),
@@ -90,7 +90,7 @@ bbox_assigner = {
     "crane": dict(
         type='Max3DIoUAssigner',
         iou_calculator=dict(type='mmdet3d.BboxOverlapsNearest3D'),
-        pos_iou_thr=0.9,
+        pos_iou_thr=0.5,
         neg_iou_thr=0.45,
         min_pos_iou=0.45,
         ignore_iof_thr=-1),
@@ -111,7 +111,7 @@ bbox_assigner = {
     "mast": dict(
         type='Max3DIoUAssigner',
         iou_calculator=dict(type='mmdet3d.BboxOverlapsNearest3D'),
-        pos_iou_thr=0.9,
+        pos_iou_thr=0.8,
         neg_iou_thr=0.25,
         min_pos_iou=0.25,
         ignore_iof_thr=-1),
@@ -157,10 +157,8 @@ class_names = [
 # from KITTI it looks like order in the config is the main
 
 # TODO define ranges
-#voxel_size = [0.16, 0.16, 4]
-voxel_size = [0.2, 0.2, 20]
-#scatter_shape = [496, 432] # y x
-scatter_shape = [512, 448]
+voxel_size = [0.25, 0.25, 20]
+scatter_shape = [400, 320]
 
 model = dict(
     type='VoxelNet',
@@ -168,7 +166,7 @@ model = dict(
         type='Det3DDataPreprocessor',
         voxel=True,
         voxel_layer=dict(
-            max_num_points=20,  # max_points_per_voxel
+            max_num_points=100,  # max_points_per_voxel
             point_cloud_range=point_cloud_range,
             voxel_size=voxel_size,
             max_voxels=(32000, 32000))),

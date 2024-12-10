@@ -121,7 +121,7 @@ eval_pipeline = [
 ]
 
 data_prefix = dict(pts='points/', img='', sweeps='')
-batch_mult = 6
+batch_mult = 8
 train_dataloader = dict(
     batch_size=batch_mult*6,
     num_workers=4,

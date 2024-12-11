@@ -261,7 +261,7 @@ optim_wrapper = dict(
 
 coarse_optimization_iter = [0, 40]
 fine_optimization_iter = [40, 500]
-fine_optimization_iter = [40, 100]  # fast
+fine_optimization_iter = [40, 200]  # fast
 
 
 param_scheduler = [

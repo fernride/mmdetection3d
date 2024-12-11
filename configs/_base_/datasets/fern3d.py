@@ -126,10 +126,10 @@ train_dataloader = dict(
     batch_size=batch_mult*6,
     num_workers=4,
     persistent_workers=True,
-    sampler=dict(type='ClassAwareSampler'),
+    sampler=dict(type='DefaultSampler', shuffle=True),
     dataset=dict(
         type='RepeatDataset',
-        times=2,
+        times=1,
         dataset=dict(
             type=dataset_type,
             data_root=data_root,

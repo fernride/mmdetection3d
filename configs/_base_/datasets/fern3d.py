@@ -126,7 +126,7 @@ train_dataloader = dict(
     batch_size=batch_mult*6,
     num_workers=4,
     persistent_workers=True,
-    sampler=dict(type='DefaultSampler', shuffle=True),
+    sampler=dict(type='ClassAwareSampler'),
     dataset=dict(
         type='RepeatDataset',
         times=2,

@@ -285,7 +285,7 @@ def cli():
     #model_path = Path("/home/omuratov/workspace/fern_ml/output/fernnet/fernnet_human_500")
     model_path = Path("/home/omuratov/workspace/fern_ml/output/fernnet/fern3d_dynamic_500_2024_09_12")
     #model_path = Path("/home/omuratov/workspace/fern_ml/output/fernnet/fern3d_static_2024_11_27_4")
-    model_path = Path("/home/omuratov/workspace/fern_ml/output/fernnet/fern3d_b1-b7_9000_v2/")
+    model_path = Path("/home/omuratov/workspace/fern_ml/output/fernnet/fern3d_b1-b7-9000_v3/")
     model = model_path/"pointpillars_fern3d_dynamic.py"
     #model = model_path/"pp_fern3d_static_only.py"
     weights = [x for x in model_path.iterdir() if x.suffix == ".pth"][0]

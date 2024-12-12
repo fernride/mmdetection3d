@@ -260,8 +260,9 @@ optim_wrapper = dict(
     clip_grad=dict(max_norm=10, norm_type=2))
 
 coarse_optimization_iter = [0, 40]
-fine_optimization_iter = [40, 500]
-fine_optimization_iter = [40, 200]  # fast
+coarse_optimization_iter = [0, 20]
+fine_optimization_iter = [40, 100]
+fine_optimization_iter = [20, 80]
 
 
 param_scheduler = [

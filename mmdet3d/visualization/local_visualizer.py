@@ -216,6 +216,8 @@ class Det3DLocalVisualizer(DetLocalVisualizer):
         """
         assert points is not None
         assert vis_mode in ('replace', 'add')
+        if len(points) < 10:
+            print("Giving some strange input, got only %d points" % len(points))
         check_type('points', points, np.ndarray)
 
         if not hasattr(self, 'o3d_vis'):

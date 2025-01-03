@@ -71,6 +71,17 @@ class Fern3dDataset(Det3DDataset):
     def parse_ann_info(self, info: dict) -> dict | None:
         # custom fernride annotation not used in training explicitly
         if 'fern_info' in info.keys():
+            scan_path = info['fern_info']['scan_path']
+            timestamp = int(info['fern_info']['timestamp'])
+            source = str(info["fern_info"]["source"])
+            side = -1
+            if "left" in source:
+                side = 0
+            elif "right" in source:
+                side = 1
+            elif "front" in source:
+                side = 2
+            scene_id = int(source.split("segments/")[1].split("/")[0])
             del info['fern_info']
         ann_info = super().parse_ann_info(info)
         if ann_info is None:
@@ -81,4 +92,7 @@ class Fern3dDataset(Det3DDataset):
         
         gt_bboxes_3d = LiDARInstance3DBoxes(ann_info['gt_bboxes_3d'])
         ann_info['gt_bboxes_3d'] = gt_bboxes_3d
+        ann_info["side"] = side
+        ann_info['scene_id'] = scene_id
+        ann_info['timestamp'] = timestamp
         return ann_info

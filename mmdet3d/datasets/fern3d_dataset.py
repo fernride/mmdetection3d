@@ -18,6 +18,7 @@ CLASS_NAMES = [
     "barrier",
     "sign",
     "machine_other",
+    "elevated_container",
 ]
 
 COLOR_MAP = {
@@ -32,6 +33,7 @@ COLOR_MAP = {
     "mast": (0, 255, 255),  # light blue
     "sign": (255, 255, 0),  # yellow
     "machine_other": (255, 0, 255),  # pink
+    "elevated_container": (0, 255, 0),  # green
 }
 
 

@@ -301,7 +301,7 @@ class EvalAccumulator:
     def range_indices(self, boxes):
         box_ranges = np.array([get_distance_to_ref_point(self.sensor_point, box) for box in boxes])
         box_ranges_to_bins = np.zeros(len(box_ranges), dtype=np.int32)
-        for ind in range(self._detection_bins.shape[0]):
+        for ind in range(self._detection_bins.shape[0]-1):
             box_ranges_to_bins = np.maximum(box_ranges_to_bins, ind * (box_ranges > self._detection_bins[ind]))
         return box_ranges_to_bins
     
@@ -405,6 +405,7 @@ class FernDynamicMetric(BaseMetric):
             gt_labels = gt_ann['gt_labels_3d']
             track_ids = gt_ann['track_id']
             num_lidar_points = gt_ann['num_lidar_pts']
+            timestamp = gt_ann['timestamp']
             side = gt_ann['side']
             scene_id = gt_ann['scene_id']
             # here need to do optimal assignment
@@ -420,6 +421,7 @@ class FernDynamicMetric(BaseMetric):
             result['num_lidar_points'] = num_lidar_points
             result['side'] = side
             result['scene_id'] = scene_id
+            result['timestamp'] = timestamp
 
             self.results.append(result)
 
@@ -436,7 +438,7 @@ class FernDynamicMetric(BaseMetric):
         """
         logger: MMLogger = MMLogger.get_current_instance()
         self.classes : list[str] = self.dataset_meta['classes']
-        save_raw = False
+        save_raw = False 
         if save_raw:
             import pickle
 
@@ -451,19 +453,15 @@ class FernDynamicMetric(BaseMetric):
             gt_bboxes = frame['gt_bboxes']
             gt_labels = frame['gt_labels']
             eval_acc.add_items(gt_bboxes, gt_labels, pred_bboxes, pred_labels)
-
+        
         metric_dict = {}
-        #calculate_stat_over_classes([x for x in range(len(self.classes))], eval_acc, metric_dict, "all")
         dynamic_classes = ["truck", "trailer", "car", "reach_stacker", "forklift", "machine_other"]
         dynamic_classes_indices = [self.classes.index(x) for x in dynamic_classes]
         calculate_stat_over_classes(dynamic_classes_indices, eval_acc, metric_dict, "dynamic")
         static_classes = ["mast"]
         static_classes_indices = [self.classes.index(x) for x in static_classes]
         calculate_stat_over_classes(static_classes_indices, eval_acc, metric_dict, "static")
-        #vru_classes = ["human"]
-        #vru_classes_indices = [self.classes.index(x) for x in vru_classes]
-        #calculate_stat_over_classes(vru_classes_indices, eval_acc, metric_dict, "vru")
         if self.format_only:
-            logger.info(f'results are not saved in')
+            logger.info(f'results are not saved')
         return metric_dict
 

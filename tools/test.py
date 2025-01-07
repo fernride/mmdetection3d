@@ -142,7 +142,7 @@ def main():
         runner = RUNNERS.build(cfg)
 
     # start testing
-    runner.test()
+    runner.val()
 
 
 if __name__ == '__main__':

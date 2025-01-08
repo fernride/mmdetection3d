@@ -140,13 +140,13 @@ bbox_assigner = {
 }
 
 class_names = [
-    #"car",
-    #"truck",
-    #"trailer",
-    #"human",
-    #"reach_stacker",
-    #"crane",
-    #"forklift",
+    "car",
+    "truck",
+    "trailer",
+    "human",
+    "reach_stacker",
+    "crane",
+    "forklift",
     "mast",
     #"barrier",
     #"sign",
@@ -168,7 +168,7 @@ model = dict(
         type='Det3DDataPreprocessor',
         voxel=True,
         voxel_layer=dict(
-            max_num_points=100,  # max_points_per_voxel
+            max_num_points=32,  # max_points_per_voxel
             point_cloud_range=point_cloud_range,
             voxel_size=voxel_size,
             max_voxels=(32000, 32000))),
@@ -178,7 +178,9 @@ model = dict(
         feat_channels=[64],
         with_distance=False,
         voxel_size=voxel_size,
-        point_cloud_range=point_cloud_range),
+        point_cloud_range=point_cloud_range,
+        norm_cfg=dict(type='BN1d', eps=1e-3, momentum=0.01),
+        legacy=False),
     middle_encoder=dict(
         type='PointPillarsScatter', in_channels=64, output_shape=scatter_shape),
     backbone=dict(
@@ -186,12 +188,17 @@ model = dict(
         in_channels=64,
         layer_nums=[3, 5, 5],
         layer_strides=[2, 2, 2],
-        out_channels=[64, 128, 256]),
+        out_channels=[64, 128, 256],
+        norm_cfg=dict(type='BN', eps=1e-3, momentum=0.01),
+        conv_cfg=dict(type='Conv2d', bias=False)),
     neck=dict(
         type='SECONDFPN',
         in_channels=[64, 128, 256],
         upsample_strides=[1, 2, 4],
-        out_channels=[128, 128, 128]),
+        out_channels=[128, 128, 128],
+        norm_cfg=dict(type='BN', eps=1e-3, momentum=0.01),
+        upsample_cfg=dict(type='deconv', bias=False),
+        use_conv_for_no_stride=True),
     bbox_head=dict(
         type='Anchor3DHead',
         num_classes=len(class_names),
@@ -262,10 +269,8 @@ optim_wrapper = dict(
 
 coarse_optimization_iter = [0, 40]
 coarse_optimization_iter = [0, 20]
-coarse_optimization_iter = [0, 2]
 fine_optimization_iter = [40, 100]
 fine_optimization_iter = [20, 80]
-fine_optimization_iter = [2, 4]
 
 
 param_scheduler = [

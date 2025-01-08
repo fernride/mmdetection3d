@@ -68,7 +68,7 @@ train_pipeline = [
     dict(
         type='RandomJitterPoints',
         jitter_std=[0.05, 0.05, 0.1],
-        clip_range=[0.1, 0.1, 0.1],
+        clip_range=[0.2, 0.2, 0.2],
     ),
     dict(type='RandomFlip3D', flip_ratio_bev_horizontal=0.5, flip_box3d=True),
     dict(

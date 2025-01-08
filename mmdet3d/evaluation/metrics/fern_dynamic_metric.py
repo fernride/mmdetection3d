@@ -225,7 +225,7 @@ def compute_iou_transformed(ref_bbox, test_bbox):
     union_area = ref_area + test_area - intersection_area
 
     # IoU
-    iou = intersection_area / union_area
+    iou = intersection_area / (union_area + 1e-6)
     return iou
 
 

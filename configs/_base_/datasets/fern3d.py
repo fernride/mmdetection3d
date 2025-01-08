@@ -7,6 +7,8 @@ dataset_folder = '/home/omuratov/bigdata/datasets'
 #data_root = f'{dataset_folder}/fern_v0_v3_v4_v7_filtered'
 #data_root = f'{dataset_folder}/fern3d_static_v0'
 data_root = f'{dataset_folder}/fern3d_b1-b7_all'
+data_root = f'{dataset_folder}/fern3d_b1-b7_60'
+eval_root = f'{dataset_folder}/fern3d_v10_all'
 #data_root = '/home/omuratov/bigdata/pipeline_v0/segments/00000/training/scan'
 #class_names = ['car', 'truck', 'trailer', 'human', 'reach_stacker', 'crane', 'forklift']
 class_names = [
@@ -121,9 +123,9 @@ eval_pipeline = [
 ]
 
 data_prefix = dict(pts='points/', img='', sweeps='')
-batch_mult = 7
+batch_mult = 11
 train_dataloader = dict(
-    batch_size=batch_mult*6,
+    batch_size=batch_mult*4,
     num_workers=4,
     persistent_workers=True,
     sampler=dict(type='DefaultSampler', shuffle=True),
@@ -162,15 +164,15 @@ test_dataloader = dict(
         backend_args=backend_args))
 
 val_dataloader = dict(
-    batch_size=1,
+    batch_size=1*3,
     num_workers=1,
     persistent_workers=True,
     drop_last=False,
     sampler=dict(type='DefaultSampler', shuffle=False),
     dataset=dict(
         type=dataset_type,
-        data_root=data_root,
-        ann_file='fern3d_test.pkl',
+        data_root=eval_root,
+        ann_file='fern3d_eval.pkl',
         pipeline=test_pipeline,
         metainfo=metainfo,
         modality=input_modality,
@@ -181,7 +183,7 @@ val_dataloader = dict(
 
 val_evaluator = dict(
     type='FernDynamicMetric',
-    ann_file=data_root + 'fern3d_test.pkl',
+    ann_file=eval_root + 'fern3d_eval.pkl',
     metric='bbox',
     backend_args=backend_args)
 test_evaluator = val_evaluator

@@ -140,17 +140,18 @@ bbox_assigner = {
 }
 
 class_names = [
-    "car",
-    "truck",
-    "trailer",
-    "human",
-    "reach_stacker",
-    "crane",
-    "forklift",
+    #"car",
+    #"truck",
+    #"trailer",
+    #"human",
+    #"reach_stacker",
+    #"crane",
+    #"forklift",
     "mast",
     #"barrier",
     #"sign",
-    "machine_other",]
+    #"machine_other",
+]
 
 #class_names = ['car', 'truck', 'trailer', 'human', 'reach_stacker']
 #class_names = ['human']
@@ -261,8 +262,10 @@ optim_wrapper = dict(
 
 coarse_optimization_iter = [0, 40]
 coarse_optimization_iter = [0, 20]
+coarse_optimization_iter = [0, 2]
 fine_optimization_iter = [40, 100]
 fine_optimization_iter = [20, 80]
+fine_optimization_iter = [2, 4]
 
 
 param_scheduler = [

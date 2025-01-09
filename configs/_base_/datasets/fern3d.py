@@ -7,7 +7,7 @@ dataset_folder = '/home/omuratov/bigdata/datasets'
 #data_root = f'{dataset_folder}/fern_v0_v3_v4_v7_filtered'
 #data_root = f'{dataset_folder}/fern3d_static_v0'
 data_root = f'{dataset_folder}/fern3d_b1-b7_all'
-data_root = f'{dataset_folder}/fern3d_b1-b7_60'
+#data_root = f'{dataset_folder}/fern3d_b1-b7_60'
 eval_root = f'{dataset_folder}/fern3d_v10_all'
 #data_root = '/home/omuratov/bigdata/pipeline_v0/segments/00000/training/scan'
 #class_names = ['car', 'truck', 'trailer', 'human', 'reach_stacker', 'crane', 'forklift']
@@ -70,12 +70,12 @@ train_pipeline = [
         jitter_std=[0.05, 0.05, 0.1],
         clip_range=[0.2, 0.2, 0.2],
     ),
-    dict(type='RandomFlip3D', flip_ratio_bev_horizontal=0.5, flip_box3d=True),
+    dict(type='RandomFlip3D', flip_ratio_bev_horizontal=0.5, flip_ratio_bev_vertical=0.2, flip_box3d=True),
     dict(
         type='GlobalRotScaleTrans',
-        rot_range=[-deg_to_rad_mult*10.0, deg_to_rad_mult*10.0],
+        rot_range=[-deg_to_rad_mult*30.0, deg_to_rad_mult*30.0],
         scale_ratio_range=[0.95, 1.05],
-        translation_std=[0.15, 0.15, 0.15]),
+        translation_std=[0.15, 0.15, 0.30]),
     dict(type='PointsRangeFilter', point_cloud_range=point_cloud_range),
 #    dict(type='ObjectNameFilter', classes=['mast']),
     dict(type='ObjectRangeFilter', point_cloud_range=point_cloud_range),

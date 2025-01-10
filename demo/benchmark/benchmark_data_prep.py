@@ -5,6 +5,7 @@ import open3d as o3d
 import gzip
 import yaml
 from scipy.spatial.transform import Rotation
+from tqdm import tqdm
 
 INTENSITY_NORMALIZATION_CONSTANT = 65535.0
 
@@ -156,13 +157,14 @@ if __name__ == "__main__":
     scans_dir = segment_path / "points"
     raw_data_dir = segment_path / "raw_data"
     prefix = "-lidar_right"
-    for scan in raw_data_dir.iterdir():
-        if not scan.suffix == ".gz":
+    all_pklgz_files = [scan for scan in raw_data_dir.iterdir() if scan.suffix == ".gz"]
+    for scan in tqdm(all_pklgz_files, desc="Converting .pkl.gz to .bin"):
+        if not scan.suffix == ".gz" or not scan.name.startswith(prefix[1:]):
             continue
 
         pose_chassis_from_sensor = get_transform_to_chassis_from_sensor(prefix, segment_path)
         
         pcl = load_scan(scan, pose_chassis_from_sensor)
         save_pointcloud(
-            pcl.point.positions.numpy(), pcl.point.intensity.numpy().flatten(), scans_dir / f"{scan.name.strip(".pkl.gz")}.bin"
+            pcl.point.positions.numpy(), pcl.point.intensity.numpy().flatten(), scans_dir / f"{scan.name.split('.')[0]}.bin"
         )

@@ -199,13 +199,5 @@ def run_test_inference(dataset_path: Path, output_path: Path, model_path: Path, 
 def cli(dataset_path: Path, output_path: Path, model_path: Path, overwrite: bool):
     run_test_inference(dataset_path, output_path, model_path, overwrite)
     
-"""
-def cli():
-    model_path = Path("/home/tstubler/testing_data/mmdet3d_test/model/fern3d_b1-b7-50000_v0")
-    dataset_path = Path("/home/tstubler/testing_data/mmdet3d_test/workspace/points")
-    output_path = Path("/home/tstubler/testing_data/mmdet3d_test/torch_results")
-    run_test_inference(dataset_path, output_path, model_path, True)
-"""
-    
 if __name__ == "__main__":
     cli()
